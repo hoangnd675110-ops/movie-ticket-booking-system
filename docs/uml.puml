@@ -1,0 +1,243 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+
+title Movie Ticket Booking System - UML Class Diagram
+
+abstract class Person {
+  # m_name : string
+  # m_email : string
+  # m_phone : string
+  + Person(name, email, phone)
+  + getName() : string
+  + getEmail() : string
+  + getPhone() : string
+  + {abstract} getDescription() : string
+  + displayInfo() : void
+}
+
+class Customer {
+  - m_loyaltyPoints : int
+  + Customer(name, email, phone)
+  + getLoyaltyPoints() : int
+  + addLoyaltyPoints(points) : void
+  + getDescription() : string
+  + displayInfo() : void
+}
+
+class Admin {
+  - m_staffId : string
+  + Admin(name, email, phone, staffId)
+  + getStaffId() : string
+  + getDescription() : string
+  + displayInfo() : void
+}
+
+abstract class Show {
+  # m_id : int
+  # m_title : string
+  # m_duration : int
+  # m_basePrice : double
+  + Show(id, title, duration, basePrice)
+  + getId() : int
+  + getTitle() : string
+  + getDuration() : int
+  + getBasePrice() : double
+  + getPrice() : double
+  + {abstract} getType() : string
+  + display() : void
+}
+
+class Movie {
+  - m_genre : string
+  + Movie(id, title, duration, basePrice, genre)
+  + getGenre() : string
+  + getType() : string
+  + display() : void
+}
+
+class Concert {
+  - m_artist : string
+  + Concert(id, title, duration, basePrice, artist)
+  + getArtist() : string
+  + getType() : string
+  + display() : void
+}
+
+abstract class Seat {
+  # m_row : int
+  # m_col : int
+  # m_status : SeatStatus
+  # m_customerName : string
+  + Seat(row, col)
+  + getRow() : int
+  + getCol() : int
+  + getStatus() : SeatStatus
+  + getCustomerName() : string
+  + isAvailable() : bool
+  + book(customer) : bool
+  + cancel() : bool
+  + {abstract} getPriceMultiplier() : double
+  + getLabel() : string
+  + getFinalPrice(basePrice) : double
+}
+
+class RegularSeat {
+  + RegularSeat(row, col)
+  + getPriceMultiplier() : double
+  + getLabel() : string
+}
+
+class VIPSeat {
+  + VIPSeat(row, col)
+  + getPriceMultiplier() : double
+  + getLabel() : string
+}
+
+class Ticket {
+  # m_id : int
+  # m_show : const Show*
+  # m_seat : const Seat*
+  # m_customerName : string
+  + Ticket(id, show, seat, customerName)
+  + getId() : int
+  + getCustomerName() : string
+  + getShowTitle() : string
+  + getSeatLabel() : string
+  + getSeatPosition() : string
+  + calculatePrice() : double
+  + getType() : string
+  + display() : void
+}
+
+class StandardTicket {
+  + StandardTicket(id, show, seat, customerName)
+  + getType() : string
+}
+
+class GroupTicket {
+  - m_groupSize : int
+  + GroupTicket(id, show, seat, customerName, groupSize)
+  + getGroupSize() : int
+  + calculatePrice() : double
+  + getType() : string
+  + display() : void
+}
+
+abstract class Payment {
+  # m_amount : double
+  # m_status : PaymentStatus
+  + Payment(amount)
+  + getAmount() : double
+  + getStatus() : PaymentStatus
+  + setStatus(status) : void
+  + getStatusString() : string
+  + {abstract} processPayment() : bool
+  + {abstract} getPaymentMethod() : string
+  + display() : void
+}
+
+class CashPayment {
+  - m_cashTendered : double
+  + CashPayment(amount, cashTendered)
+  + getCashTendered() : double
+  + getChange() : double
+  + processPayment() : bool
+  + getPaymentMethod() : string
+  + display() : void
+}
+
+class CardPayment {
+  - m_cardNumber : string
+  - m_cardHolder : string
+  + CardPayment(amount, cardNumber, cardHolder)
+  + getMaskedCardNumber() : string
+  + processPayment() : bool
+  + getPaymentMethod() : string
+  + display() : void
+}
+
+abstract class NotificationService {
+  + {abstract} send(recipient, message) : void
+  + {abstract} getType() : string
+}
+
+class ConsoleNotification {
+  + send(recipient, message) : void
+  + getType() : string
+}
+
+class Theater {
+  - m_id : int
+  - m_name : string
+  - m_rows : int
+  - m_cols : int
+  - m_seats : vector<vector<unique_ptr<Seat>>>
+  + Theater(id, name, rows, cols)
+  + getId() : int
+  + getName() : string
+  + getRows() : int
+  + getCols() : int
+  + getSeat(row, col) : Seat*
+  + isSeatAvailable(row, col) : bool
+  + bookSeat(row, col, customer) : bool
+  + cancelBooking(row, col) : bool
+  + displaySeats() : void
+  + getAvailableSeats() : int
+  + getTotalSeats() : int
+}
+
+class BookingSystem {
+  - m_persons : vector<unique_ptr<Person>>
+  - m_shows : vector<unique_ptr<Show>>
+  - m_theaters : vector<unique_ptr<Theater>>
+  - m_tickets : vector<unique_ptr<Ticket>>
+  - m_notifier : unique_ptr<NotificationService>
+  - m_nextTicketId : int
+  + BookingSystem()
+  + setNotifier(notifier) : void
+  + addPerson(person) : void
+  + addShow(show) : void
+  + addTheater(theater) : void
+  + initializeDefaultData() : void
+  + displayAllPersons() : void
+  + displayAllShows() : void
+  + displayAllTheaters() : void
+  + displayTheaterSeats(theaterIndex) : void
+  + displayAllTickets() : void
+  + bookTicket(showIndex, theaterIndex, row, col, customerName, ticketType, groupSize) : bool
+  + cancelTicket(ticketId) : bool
+  + demonstratePolymorphism() : void
+  + getPersonCount() : int
+  + getShowCount() : int
+  + getTheaterCount() : int
+  + getTicketCount() : int
+  + getShow(index) : const Show*
+  + getTheater(index) : const Theater*
+}
+
+' Inheritance relationships
+Person <|-- Customer
+Person <|-- Admin
+Show <|-- Movie
+Show <|-- Concert
+Seat <|-- RegularSeat
+Seat <|-- VIPSeat
+Ticket <|-- StandardTicket
+Ticket <|-- GroupTicket
+Payment <|-- CashPayment
+Payment <|-- CardPayment
+NotificationService <|-- ConsoleNotification
+
+' Association relationships
+Theater *-- Seat : contains >
+Ticket --> Show : references
+Ticket --> Seat : references
+BookingSystem --> Person : manages >
+BookingSystem --> Show : manages >
+BookingSystem --> Theater : manages >
+BookingSystem --> Ticket : manages >
+BookingSystem --> NotificationService : uses >
+
+@enduml
